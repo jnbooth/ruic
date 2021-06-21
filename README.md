@@ -1,5 +1,5 @@
 # ruic
-The Rust analog to Qt's uic.
+The Rust analog to Qt's [uic](https://doc.qt.io/qt-5/uic.html).
 
 ## Installation
 

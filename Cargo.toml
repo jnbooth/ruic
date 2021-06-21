@@ -3,6 +3,7 @@ name = "ruic"
 version = "0.1.0"
 authors = ["Joshua Booth <joshua.n.booth@gmail.com>"]
 edition = "2018"
+description = "Load Qt Designer .ui files into Rust code at compile time"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

@@ -8,7 +8,7 @@ matrix:
     - rust: nightly
 branches:
   only:
-    - master
+    - main
 script:
   - |
       cargo build --locked

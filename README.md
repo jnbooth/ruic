@@ -1,6 +1,6 @@
 # ruic
 [![crates.io](https://img.shields.io/crates/v/ruic.svg)](https://crates.io/crates/ruic)
-Linux: [![Build Status](https://travis-ci.org/jnbooth/ruic.svg?branch=master)](https://travis-ci.org/jnbooth/ruic)
+Linux: [![Build Status](https://travis-ci.com/jnbooth/ruic.svg?branch=master)](https://travis-ci.com/jnbooth/ruic)
 
 The Rust analog to Qt's [uic](https://doc.qt.io/qt-5/uic.html).
 

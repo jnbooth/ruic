@@ -1,4 +1,7 @@
 # ruic
+[![crates.io](https://img.shields.io/crates/v/ruic.svg)](https://crates.io/crates/ruic)
+Linux: [![Build Status](https://travis-ci.org/jnbooth/ruic.svg?branch=master)](https://travis-ci.org/jnbooth/ruic)
+
 The Rust analog to Qt's [uic](https://doc.qt.io/qt-5/uic.html).
 
 ## Installation
@@ -29,7 +32,7 @@ OPTIONS:
     -s, --suffix <suffix>    Suffix to append to widget names, e.g. "Ui" to turn "App" into "AppUi" [default: ]
 ```
 
-## How It Works
+## How it works
 
 ruic generates a single .rs file out of one or more [Qt Designer](https://doc.qt.io/qt-5/qtdesigner-manual.html) .ui files. It does this by loading all the files into source code and generating a `load` method for each one. Generated files require a few dependencies:
 
@@ -38,7 +41,7 @@ ruic generates a single .rs file out of one or more [Qt Designer](https://doc.qt
 - [qt_widgets](https://crates.io/crates/qt_widgets)
 - [qt_ui_tools](https://crates.io/crates/qt_ui_tools)
 
-## Example
+## Demo
 
  Suppose you use Qt Designer to create the following file:
 

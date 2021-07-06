@@ -19,4 +19,7 @@ pub struct Config {
     /// Suffix to append to widget names, e.g. "Ui" to turn "App" into "AppUi"
     #[structopt(long, short, default_value = "")]
     pub suffix: String,
+    /// Run rustfmt on output
+    #[structopt(long, short)]
+    pub format: bool,
 }

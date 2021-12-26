@@ -26,19 +26,33 @@ impl<'a> Field<'a> {
     /// If the node is something else, such as a property or item, this function returns `None`.
     /// It also returns `None` if `config.all` is false and the field is on the ignore list.
     fn parse<'input>(node: Node<'a, 'input>, config: &Config) -> Option<Self> {
+        fn conforms(name: &str, pat: &str) -> bool {
+            *name == pat[..pat.len() - 1] || name.starts_with(pat)
+        }
         let name = node.attribute("name")?;
-        if !config.all
-            && (name == "label" || name.starts_with("label_") || name.ends_with("_label"))
-        {
+        if !config.all && name.starts_with('_') {
             return None;
         }
         let widget = match node.tag_name().name() {
             "widget" => node.attribute("class"),
             "action" => Some("QAction"),
-            "layout" if config.all || !node.has_children() => node.attribute("class"),
+            "layout" => node.attribute("class"),
             _ => None,
         }?;
-        if !config.all && widget == "QGroupBox" && node.has_children() {
+        if !config.all
+            && match widget {
+                "QButtonBox" => conforms(name, "buttonBox"),
+                "QFormLayout" => conforms(name, "formLayout"),
+                "QFrame" => conforms(name, "frame"),
+                "QGroupBox" => conforms(name, "groupBox"),
+                "QGridLayout" => conforms(name, "gridLayout"),
+                "QHBoxLayout" => conforms(name, "horizontalLayout"),
+                "QVBoxLayout" => conforms(name, "verticalLayout"),
+                "QLabel" => conforms(name, "label"),
+                "QWidget" => conforms(name, "widget"),
+                _ => false,
+            }
+        {
             None
         } else {
             Some(Field {
@@ -117,28 +131,29 @@ use qt_widgets::*;
 
     /// Processes the contents of a file that ends in .ui.
     fn process_file(&mut self, path: PathBuf) -> IO<()> {
+        let err = || format!("{}: invalid format", path.to_string_lossy());
         let mut src = String::new();
         File::open(&path)?.read_to_string(&mut src)?;
         src = self.trimmer.replace_all(&src, "").into_owned();
         let doc = Document::parse(&src)?;
-        let mut els = doc
+        let base = doc
             .root_element()
             .children()
             .find(|el| el.tag_name().name() == "widget")
-            .ok_or_else(|| format!("{}: invalid format", path.to_string_lossy()))?
+            .ok_or_else(err)?;
+        let base_name = base.attribute("name").ok_or_else(err)?;
+        let base_widget = base.attribute("class").ok_or_else(err)?;
+        let fields: Vec<_> = base
             .descendants()
-            .filter_map(|node| Field::parse(node, &self.config));
-
-        let base = els
-            .next()
-            .ok_or_else(|| format!("{}: invalid format", path.to_string_lossy()))?;
-        let fields: Vec<_> = els.collect();
+            .skip(1) // first descendant is always self
+            .filter_map(|node| Field::parse(node, &self.config))
+            .collect();
         writeln!(
             self.writer,
             "#[derive(Debug)]
 pub struct {}{} {{
     pub widget: QBox<{}>,",
-            base.name, self.config.suffix, base.widget
+            base_name, self.config.suffix, base_widget
         )?;
         for field in &fields {
             writeln!(
@@ -159,7 +174,7 @@ impl {}{} {{
             let widget = loader.load_bytes_with_parent(bytes, parent);
             assert!(!widget.is_null(), "invalid ui file");
             Self {{"#,
-            base.name, self.config.suffix, src
+            base_name, self.config.suffix, src
         )?;
         for field in &fields {
             writeln!(
@@ -168,7 +183,7 @@ impl {}{} {{
                 field.name_rs, field.name
             )?;
         }
-        if base.widget == "QWidget" {
+        if base_widget == "QWidget" {
             writeln!(self.writer, "                widget,")?;
         } else {
             writeln!(

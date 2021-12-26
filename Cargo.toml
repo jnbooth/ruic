@@ -1,8 +1,8 @@
 [package]
 name = "ruic"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Joshua Booth <joshua.n.booth@gmail.com>"]
-edition = "2018"
+edition = "2021"
 description = "Load Qt Designer .ui files into Rust code at compile time"
 license = "MIT"
 repository = "https://github.com/jnbooth/ruic"
